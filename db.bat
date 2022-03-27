@@ -1,0 +1,1 @@
+docker run -d --name petstoredb -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password mysql:5.7

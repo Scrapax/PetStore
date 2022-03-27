@@ -1,0 +1,31 @@
+name: test
+
+on: push
+     
+jobs:
+  integration-test:  
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+        - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: check out
+        uses: actions/checkout@v2
+      - name: Build
+        run: |
+          dotnet build --configuration Release
+      - name: Install dotnet ef tool
+        run: |
+          dotnet tool install -g dotnet-ef
+      - name: Apply migrations
+        run: |
+          dotnet ef database update -p src/DB -s src/Migrator -v
+      - name: Test
+        run: |
+          dotnet test
